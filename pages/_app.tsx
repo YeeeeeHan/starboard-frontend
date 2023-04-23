@@ -1,55 +1,14 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { createClient, WagmiConfig } from 'wagmi';
-import { configureChains } from '@wagmi/core';
-import {
-  arbitrum,
-  arbitrumGoerli,
-  avalanche,
-  avalancheFuji,
-  bsc,
-  bscTestnet,
-  fantom,
-  fantomTestnet,
-  foundry,
-  goerli,
-  mainnet,
-  optimism,
-  optimismGoerli,
-  polygon,
-  polygonMumbai,
-  sepolia,
-} from '@wagmi/core/chains';
-import { extendTheme } from '@chakra-ui/react';
-import { publicProvider } from 'wagmi/providers/public';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import '@rainbow-me/rainbowkit/styles.css';
+import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
 
-const { provider, webSocketProvider } = configureChains(
-  [
-    arbitrum,
-    arbitrumGoerli,
-    avalanche,
-    avalancheFuji,
-    bsc,
-    bscTestnet,
-    fantom,
-    fantomTestnet,
-    foundry,
-    goerli,
-    mainnet,
-    optimism,
-    optimismGoerli,
-    polygon,
-    polygonMumbai,
-    sepolia,
-  ],
-  [publicProvider()],
-);
-
-const client = createClient({
-  provider,
-  webSocketProvider,
-  autoConnect: true,
+const RainbowKitWrapper = dynamic(() => import('provider/RainbowKitProvider'), {
+  ssr: false,
 });
 
 const config = {
@@ -60,14 +19,21 @@ const config = {
 const theme = extendTheme({ config });
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
-    <ChakraProvider resetCSS theme={theme}>
-      <WagmiConfig client={client}>
-        <SessionProvider session={pageProps.session} refetchInterval={0}>
-          <Component {...pageProps} />
-        </SessionProvider>
-      </WagmiConfig>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <RainbowKitWrapper>
+          <ChakraProvider resetCSS theme={theme}>
+            <SessionProvider session={pageProps.session} refetchInterval={0}>
+              <Component {...pageProps} />
+            </SessionProvider>
+          </ChakraProvider>
+        </RainbowKitWrapper>
+      </Hydrate>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 };
 

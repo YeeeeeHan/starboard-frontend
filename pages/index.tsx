@@ -1,11 +1,11 @@
 import { Default } from 'components/layouts/Default';
-import { Home } from 'components/templates/home';
 import type { NextPage } from 'next';
+import CreateAuction from './createAuction';
 
 const HomePage: NextPage = () => {
   return (
     <Default pageName="Home">
-      <Home />
+      <CreateAuction />
     </Default>
   );
 };

@@ -19,6 +19,8 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@moralisweb3/next": "^2.14.1",
+    "@rainbow-me/rainbowkit": "^0.8.1",
+    "@tanstack/react-query-devtools": "^4.29.3",
     "@web3uikit/core": "^0.1.5",
     "@web3uikit/icons": "^0.4.1",
     "eslint-config-next": "^13.0.6",
